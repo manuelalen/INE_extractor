@@ -1,0 +1,23 @@
+select 
+	oc.anyo,
+    ROUND((SUM(agg_ec.valor)*1000000)/(SUM(oc.valor)*1000*40*4*12),2) AS productividad_hora,
+    1.21*avg(gm.valor)/(240*ROUND((SUM(agg_ec.valor)*1000000)/(SUM(oc.valor)*1000*40*4*12),2)) AS tiempo_trabajo_necesario
+from 
+	dev_testeos.ine_ocupados oc
+left join dev_testeos.ine_agregados_economicos agg_ec
+on oc.anyo = agg_ec.anyo
+left join dev_testeos.ine_gastos_medios_anuales gm
+on agg_ec.anyo = gm.anyo
+where
+gm.indice like "Total Nacional"
+and gm.dato like "Índice general"
+and gm.tipo_dato like "Dato base"
+and gm.descripcion like "Gasto medio por hogar"
+and agg_ec.indice like "Producción"
+and agg_ec.dato like "Total CNAE"
+and agg_ec.descripcion like "Dato base" 
+and oc.dato like "Ambos sexos"
+and oc.tipo_dato like "16 y más años"
+and oc.descripcion like "Personas"
+group by oc.anyo
+order by oc.anyo desc
